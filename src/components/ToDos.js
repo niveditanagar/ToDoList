@@ -26,9 +26,6 @@ useEffect(() => {
    setTodos(todos.filter((_, index) => index !== indextoRemove)); // _ is a placeholder for the first argument which we don't use
  }
 
- //to toggle a todo 
-
-
     return (
 
         <div className="App">
