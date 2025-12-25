@@ -17,7 +17,7 @@ useEffect(() => {
  function addTodo() { 
    if(text.trim() === '') return;
 
-   setTodos([...todos, text]);
+   setTodos([...todos, {  text: text, completed: false }]);
    setText("");
  }
 
@@ -25,6 +25,13 @@ useEffect(() => {
  function removeTodo(indextoRemove) { 
    setTodos(todos.filter((_, index) => index !== indextoRemove)); // _ is a placeholder for the first argument which we don't use
  }
+
+ //to toggle a todo 
+ function toggleTodo(index) {
+    setTodos(todos.map((todo, i) =>
+      i === index ? { ...todo, completed: !todo.completed } : todo
+    ));
+  }
 
     return (
 
@@ -42,9 +49,15 @@ useEffect(() => {
 
             <ul>
                 {todos.map( (todo, index) => (
-                <li key={index}>
-                {todo}
+                <li key={index} style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                     <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(index)}
+            />
+                {todo.text}
                 <button onClick={ () => removeTodo(index)}>X</button>
+
                 </li>
                 ))}
             </ul>
