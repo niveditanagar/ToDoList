@@ -22,6 +22,7 @@ useEffect(() => {
  }
 
  //to remove a todo
+ //storing each todo as an object to allow tracking the state of each todo.
  function removeTodo(indextoRemove) { 
    setTodos(todos.filter((_, index) => index !== indextoRemove)); // _ is a placeholder for the first argument which we don't use
  }
@@ -51,11 +52,12 @@ useEffect(() => {
                 {todos.map( (todo, index) => (
                 <li key={index} style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
                      <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleTodo(index)}
-            />
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={() => toggleTodo(index)}
+                    />
                 {todo.text}
+
                 <button onClick={ () => removeTodo(index)}>X</button>
 
                 </li>
