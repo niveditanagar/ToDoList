@@ -18,10 +18,25 @@ export default function ToDos() {
   const [filter, setFilter] = useState('all');
 
   // to add a new todo
-  function addTodo() {
+  async function addTodo() {
     if (text.trim() === '') return;
 
-    setTodos([...todos, { text: text, completed: false }]); // storing each todo as an object to allow tracking the state of each todo.
+    const newTodo = { text: text, completed: false };
+    console.log("hello look here");
+    // send to backend via proxy using a relative path; fall back to local update if request fails
+    try {     
+      const res = await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTodo),
+      });
+      if (!res.ok) throw new Error('Network response was not ok');
+      const saved = await res.json();
+      setTodos([...todos, saved]);
+    } catch (err) {
+      setTodos([...todos, newTodo]);
+    }
+
     setText("");
   }
 
