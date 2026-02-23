@@ -22,7 +22,7 @@ export default function ToDos() {
     if (text.trim() === '') return;
 
     const newTodo = { text: text, completed: false };
-    console.log("hello look here");
+   
     // send to backend via proxy using a relative path; fall back to local update if request fails
     try {     
       const res = await fetch('/api/todos', {
@@ -41,16 +41,57 @@ export default function ToDos() {
   }
 
   // to remove a todo
-  function removeTodo(indextoRemove) {
-    setTodos(todos.filter((_, index) => index !== indextoRemove)); // _ is a placeholder for the first argument which we don't use
+  async function removeTodo(indextoRemove) {
+    const todoToRemove = todos[indextoRemove];
+
+    if(todoToRemove.id) {
+      console.log("hello trying to remove");
+      try {
+        const res = await fetch(`/api/todos/${todoToRemove.id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) throw new Error('Delete failed');
+        setTodos(todos.filter((_, index) => index !== indextoRemove)); // _ is a placeholder for the first argument which we don't use
+      } catch (err) {
+        console.error('Failed to delete todo:', err);
+        //fallback: still remove from locally even if server delete fails
+        setTodos(todos.filter((_, index) => index !== indextoRemove)); // _ is a placeholder for the first argument which we don't use
+      }
+    } else {
+    // local-only todo (no _id), just remove from state
+    setTodos(todos.filter((_, index) => index !== indextoRemove));
+    }
   }
 
-  // to toggle a todo 
-  function toggleTodo(index) {
+// to toggle a todo (UPDATE)
+async function toggleTodo(index) {
+  const todoToToggle = todos[index];
+  
+  if (todoToToggle.id) {
+    console.log("hello trying to update");
+    try {
+      const res = await fetch(`/api/todos/${todoToToggle.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !todoToToggle.completed }),
+      });
+      if (!res.ok) throw new Error('Update failed');
+      setTodos(todos.map((todo, i) =>
+        i === index ? { ...todo, completed: !todo.completed } : todo
+      ));
+    } catch (err) {
+      console.error('Failed to update:', err);
+      setTodos(todos.map((todo, i) =>
+        i === index ? { ...todo, completed: !todo.completed } : todo
+      ));
+    }
+  } else {
     setTodos(todos.map((todo, i) =>
       i === index ? { ...todo, completed: !todo.completed } : todo
     ));
   }
+}
 
   return (
 

@@ -1,2 +1,7 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+.App {
+  background-color: var(--color-pink-950);
+}
